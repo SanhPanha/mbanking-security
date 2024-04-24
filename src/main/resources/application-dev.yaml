@@ -1,0 +1,45 @@
+server:
+  port: 8888
+
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+  datasource:
+    username: postgres
+    password: Panha12345
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/mobile_banking_cstad
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update #  or create-drop
+    generate-ddl: true
+
+springdoc:
+  swagger-ui:
+    path: /
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.orm.jpa: DEBUG
+    org.hibernate.SQL: DEBUG  # To log SQL statements
+    org.hibernate.type: TRACE  # To log bound parameters
+
+
+file:
+  storage-dir: "filestorage/images/"
+  client-dir: "/images/**"
+
+
+
+# This is for the access token
+ACCESS_TOKEN_PRIVATE_KEY_PATH: access-refresh-token-keys/access-token-private.key
+ACCESS_TOKEN_PUBLIC_KEY_PATH: access-refresh-token-keys/access-token-public.key
+# This is for the refresh token
+REFRESH_TOKEN_PRIVATE_KEY_PATH: access-refresh-token-keys/refresh-token-private.key
+REFRESH_TOKEN_PUBLIC_KEY_PATH: access-refresh-token-keys/refresh-token-public.key
