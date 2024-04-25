@@ -28,15 +28,12 @@ public class UserRestController {
 
     @GetMapping
     @Operation(summary = "Get all users")
-//    public BaseResponse<List<UserResponse>> getAllUser() {
-//        return BaseResponse.<List<UserResponse>>ok()
-//                .setPayload(userService.getAllUsers());
-//
-//    }
+    public BaseResponse<List<UserResponse>> getAllUser() {
+        return BaseResponse.<List<UserResponse>>ok()
+                .setPayload(userService.getAllUsers());
 
-    public String getAllUsers(){
-        return "This is all the users ! ";
     }
+
 
     @GetMapping("/{id}")
     @Operation(summary = "Get user by id")

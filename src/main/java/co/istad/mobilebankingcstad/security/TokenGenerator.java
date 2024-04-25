@@ -17,76 +17,70 @@ import java.time.temporal.ChronoUnit;
 
 @Component
 public class TokenGenerator {
-
-    private final JwtEncoder jwtAccessTokenEncoder;
+    private final  JwtEncoder jwtAccessTokenEncoder;
     private final JwtEncoder jwtRefreshTokenEncoder;
-
     public TokenGenerator(
             JwtEncoder jwtAccessTokenEncoder,
             @Qualifier("jwtRefreshTokenEncoder") JwtEncoder jwtRefreshTokenEncoder
     ) {
-        this.jwtAccessTokenEncoder = jwtAccessTokenEncoder;
         this.jwtRefreshTokenEncoder = jwtRefreshTokenEncoder;
-
+        this.jwtAccessTokenEncoder = jwtAccessTokenEncoder;
     }
 
     private String createAccessToken(Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Instant now = Instant.now();
-
+        //  we can also create scope for the token from the userDetails object here !
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
-                .expiresAt(now.plus(5, ChronoUnit.HOURS))
-                .subject(userDetails.getUser().getUsername())
-                .issuer("istad.co.mobilebanking")
-//                .claims("scopes", "read write")
+                .expiresAt(now.plus(5, ChronoUnit.MINUTES))
+                .subject(userDetails.getUsername())
+                .issuer("istad.co.mobilebanking") //
 //                .notBefore(now)
+//                .claims("scope", "read write")
                 .build();
         return jwtAccessTokenEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
-
-    // expired in 7 days
+    // expire after 7 days
     private String createRefreshToken(Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(now.plus(7, ChronoUnit.DAYS))
-                .subject(userDetails.getUser().getUsername())
+                .subject(userDetails.getUsername())
                 .issuer("istad.co.mobilebanking")
                 .build();
         return jwtRefreshTokenEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
-    public AuthResponse generateTokens(Authentication authentication) {
 
-        if (!(authentication.getPrincipal() instanceof CustomUserDetails customUserDetails)) {
-            throw new BadCredentialsException("Provided authentication is not valid");
-
+    // token rotation !
+    public AuthResponse generateTokens(Authentication authentication ) {
+        if(!(authentication.getPrincipal() instanceof CustomUserDetails  customUserDetails)){
+            throw new BadCredentialsException("Provided Token is not valid");
         }
-
-        String refreshToken;
-
-        if (authentication.getCredentials() instanceof Jwt jwt) {
+        String refreshToken ;
+        if( authentication.getCredentials() instanceof Jwt jwt){
             Instant now = Instant.now();
             Instant expireAt = jwt.getExpiresAt();
             Duration duration = Duration.between(now, expireAt);
-            long daysUntilExpire = duration.toDays();
-
-            if (daysUntilExpire <= 7) {
+            long daysUtilsExpired = duration.toDays();
+            // Duration.between(Instant.now(), jwt.getExpiresAt()).toDays() < 7
+            if(daysUtilsExpired < 7){
                 refreshToken = createRefreshToken(authentication);
-            } else {
+            }else {
                 refreshToken = jwt.getTokenValue();
             }
-        } else {
+        }else {
             refreshToken = createRefreshToken(authentication);
         }
-
         return AuthResponse.builder()
                 .refreshToken(refreshToken)
                 .accessToken(createAccessToken(authentication))
                 .userId(customUserDetails.getUser().getId())
                 .build();
+
     }
 }
