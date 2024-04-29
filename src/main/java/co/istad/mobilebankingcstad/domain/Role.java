@@ -10,7 +10,7 @@ import java.util.Set;
 @Entity
 @Table(name = "roles_tbl")
 @Data
-public class Role implements GrantedAuthority {
+public class        Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;

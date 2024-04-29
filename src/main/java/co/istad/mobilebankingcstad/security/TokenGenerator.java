@@ -33,7 +33,7 @@ public class TokenGenerator {
         //  we can also create scope for the token from the userDetails object here !
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
-                .expiresAt(now.plus(5, ChronoUnit.MINUTES))
+                .expiresAt(now.plus(10, ChronoUnit.HOURS))
                 .subject(userDetails.getUsername())
                 .issuer("istad.co.mobilebanking") //
 //                .notBefore(now)

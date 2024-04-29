@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -75,6 +76,21 @@ public class SecurityConfiguration {
                                         "images/**"
                                 )
                                 .permitAll()
+
+                                // change information of the user
+                                .requestMatchers(
+                                        HttpMethod.PATCH,
+                                        "/api/v1/users/**"
+                                )
+
+                                .hasRole("ADMIN") .requestMatchers(
+                                        HttpMethod.DELETE,
+                                        "/api/v1/users/**"
+                                )
+                                .hasRole("ADMIN")
+//                                .hasAnyAuthority("ROLE_ADMIN", "WRITE", "DELETE")
+
+
                                 .anyRequest()
                                 .authenticated()
                 )

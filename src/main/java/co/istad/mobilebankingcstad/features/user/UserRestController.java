@@ -4,6 +4,7 @@ package co.istad.mobilebankingcstad.features.user;
 import co.istad.mobilebankingcstad.features.user.dto.UserRequest;
 import co.istad.mobilebankingcstad.features.user.dto.UserResponse;
 import co.istad.mobilebankingcstad.features.user.dto.UserUpdateRequest;
+import co.istad.mobilebankingcstad.security.CustomUserDetails;
 import co.istad.mobilebankingcstad.utils.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,6 +13,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.yaml.snakeyaml.representer.BaseRepresenter;
@@ -38,6 +41,21 @@ public class UserRestController {
     @GetMapping("/{id}")
     @Operation(summary = "Get user by id")
     public BaseResponse<UserResponse> getUserById(@PathVariable String id) {
+        return BaseResponse.<UserResponse>ok()
+                .setPayload(userService.getUserById(id));
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "Get current user")
+    public BaseResponse<UserResponse> getCurrentUserInfo( ){
+
+        String id = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getPrincipal() instanceof CustomUserDetails){
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            id = customUserDetails.getUser().getId();
+        }
+        
         return BaseResponse.<UserResponse>ok()
                 .setPayload(userService.getUserById(id));
     }

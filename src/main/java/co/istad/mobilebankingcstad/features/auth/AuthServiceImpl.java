@@ -30,7 +30,6 @@ public class AuthServiceImpl {
         );
         return tokenGenerator.generateTokens(authentication);
     }
-
     public AuthResponse refreshToken(RefreshTokenRequest request) {
         Authentication authentication = jwtAuthenticationProvider
                 .authenticate(
